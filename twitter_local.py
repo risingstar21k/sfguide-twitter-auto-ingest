@@ -30,14 +30,19 @@ def consumer():
     tweet_list = []
     total_count = 0
     s3_client = boto3.client('s3')
+    print('one')
 
     while not event.is_set() or not pipeline.empty():
+        print('two')
 
         data = pipeline.get()
+        print("pipelinedata:" )
+        print(data)
         data_dict = json.loads(data)
         data_dict.update({"keyword": keyword})
         tweet_list.append(json.dumps(data_dict))
         total_count += 1
+        print(total_count)
 
         if total_count % 2 == 0:
             print(".", end="")
@@ -57,10 +62,11 @@ def consumer():
             tweet_list = []
             os.remove(filename)
 
-
-class JSONStreamProducer(tweepy.StreamListener):
+class JSONStreamProducer(tweepy.Stream):
 
     def on_data(self, data):
+        #print("producerdata:" )
+        #print(data)
         pipeline.put(data)
         if not event.is_set():
             return True
@@ -85,13 +91,18 @@ if __name__ == "__main__":
     pipeline = queue.Queue()
     event = threading.Event()
 
-    myListener = JSONStreamProducer()
-    myStream = tweepy.Stream(auth=auth, listener=myListener)
+    myListener = JSONStreamProducer(consumer_key, consumer_secret, access_token, access_token_secret)
+    #myStream = tweepy.Stream(auth=auth, listener=myListener)
 
     t = threading.Thread(target=consumer)
+    print('three')
 
-    myStream.filter(track=[keyword], is_async=True)
+    myListener.filter(track=[keyword], threaded=True)
+    print('four')
     t.start()
+    print('five')
 
     time.sleep(900)
+    print('six')
     event.set()
+    print('seven')

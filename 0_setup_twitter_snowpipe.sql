@@ -20,9 +20,9 @@ Create external S3 stage pointing to the S3 buckets storing the tweets
 *********************************************************************************/
 
 CREATE or replace STAGE twitter_db.public.tweets
-    URL = 's3://my-twitter-bucket/'
-    CREDENTIALS = (AWS_KEY_ID = 'xxxxxxxxxxxxxxxxxxxx'
-    AWS_SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+    URL = 's3://snowflake-bucket-123/'
+    CREDENTIALS = (AWS_KEY_ID = 'AKIAT5HKXVAXBBSYBQ7T'
+    AWS_SECRET_KEY = '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')
     file_format=(type='JSON')
     COMMENT = 'Tweets stored in S3';
 
